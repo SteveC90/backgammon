@@ -116,6 +116,10 @@ int Board::getPlayerAt(int x) const {
 
 //Doesn't do any validation that the move is legal
 void Board::moveChecker(int from, int to) {
+	// Make to/from 0-based to work as indices
+	--from;
+	--to;
+
 	Color color = static_cast<Color>(getPlayerAt(from));
 	stacks[from][0]--;
 	if (getCheckerCountAt(from) == 0) {

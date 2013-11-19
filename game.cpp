@@ -23,6 +23,11 @@ void Game::start() {
 			moves = currentPlayer -> move(diceRoll);
 		} while (!areValidMoves(moves, diceRoll));
 
+		// Move checkers
+		for (int i = 0; i < moves.size(); ++i) {
+			board.moveChecker(moves[i].from, moves[i].to);
+		}
+
 		swapPlayer();
 		diceRoll = roll();
 		board.draw();
