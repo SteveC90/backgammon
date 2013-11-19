@@ -32,15 +32,19 @@ Board::Board() {
 }
 
 void Board::draw() {
+	for (int i = 12 * columnWidth; i >= 1; --i)
+		cout << "=";
+	cout << endl;
+
 	for(int i=12; i>0; --i) {
-		cout.width(3);
+		cout.width(columnWidth);
 		cout << i;
 	}
 	cout << endl;
 
 	for (int row=1; row<=5; ++row) {
 		for (int col=11; col>=0; --col) {
-			cout.width(3);
+			cout.width(columnWidth);
 			if (stacks[col][0] >= row) {
 				if (stacks[col][1] == RED)
 					cout << "X";
@@ -57,7 +61,7 @@ void Board::draw() {
 
 	for (int row=5; row>=1; --row) {
 		for (int col=12; col<=23; ++col) {
-			cout.width(3);
+			cout.width(columnWidth);
 			if (stacks[col][0] >= row) {
 				if (stacks[col][1] == RED)
 					cout << "X";
@@ -71,10 +75,14 @@ void Board::draw() {
 	}
 
 	for(int i=13; i<=24; ++i) {
-		cout.width(3);
+		cout.width(columnWidth);
 		cout << i;
 	}
 
+	cout << endl;
+
+	for (int i = 12 * columnWidth; i >= 1; --i)
+		cout << "=";
 	cout << endl;
 
 	cout << "Bar: ";
@@ -84,6 +92,10 @@ void Board::draw() {
 		else
 			cout << "O";
 	}
+	cout << endl;
+
+	for (int i = 12 * columnWidth; i >= 1; --i)
+		cout << "=";
 	cout << endl;
 }
 
