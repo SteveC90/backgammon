@@ -23,6 +23,7 @@ public:
 	vector<int> roll();
 	vector<int> chooseFirstPlayer();
 	void swapPlayer();
-	bool areValidMoves(vector<MovePair> moves, const vector<int>& diceRoll);
+	bool isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll);
+	bool isMoveValid(MovePair move);
 	void moveGenerator(vector<int> roll, Board board);
 };

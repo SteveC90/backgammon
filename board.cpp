@@ -38,7 +38,7 @@ Board::Board(const Board& oldBoard) {
 	}
 }
 
-void Board::draw() {
+void Board::draw() const {
 	for (int i = 12 * columnWidth; i >= 1; --i)
 		cout << "=";
 	cout << endl;

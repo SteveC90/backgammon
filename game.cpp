@@ -21,7 +21,7 @@ void Game::start() {
 			cout << endl;
 			
 			moves = currentPlayer -> move(diceRoll);
-		} while (!areValidMoves(moves, diceRoll));
+		} while (!isPlayValid(moves, diceRoll));
 
 		// Move checkers
 		for (int i = 0; i < moves.size(); ++i) {
@@ -83,7 +83,7 @@ void Game::moveGenerator(vector<int> roll, Board board) {
 	}
 }
 
-bool Game::areValidMoves(vector<MovePair> moves, const vector<int>& diceRoll) {	
+bool Game::isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll) {	
 	// Ensure moves match dice rolls
 	vector<int> diceRollCopy = diceRoll;
 	for (int i = 0; i < moves.size(); ++i) {
@@ -120,4 +120,31 @@ bool Game::areValidMoves(vector<MovePair> moves, const vector<int>& diceRoll) {
 	// Check validity of moves
 
 	return true;
+}
+
+bool Game::isMoveValid(MovePair move) {
+	// Subtract 1 from to/from to make 0-based
+	--move.from;
+	--move.to;	
+
+	int fromCheckerCount = board.getCheckerCountAt(move.from);
+	int toCheckerCount = board.getCheckerCountAt(move.to);
+
+	Color fromPlayerColor = static_cast<Color>(board.getPlayerAt(move.from));
+	Color toPlayerColor = static_cast<Color>(board.getPlayerAt(move.to));
+
+	// Opposing Players
+	if (fromPlayerColor != toPlayerColor) {
+		if (toCheckerCount > 1) {
+			return false;
+		}
+
+		return true;
+	} else {
+		if (toCheckerCount >= 5) {
+			return false;
+		}
+
+		return true;
+	}
 }
