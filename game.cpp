@@ -12,15 +12,16 @@ void Game::start() {
 
 	while(true) {
 		cout << "Player " << currentPlayer->getColor() << "'s turn" << endl;
-		cout << "Roll: ";
-		for (int i=0; i<diceRoll.size(); ++i)
-			cout << diceRoll[i] << " ";
-		cout << endl;
 
 		vector<MovePair> moves;
 		do {
+			cout << "Roll: ";
+			for (int i=0; i<diceRoll.size(); ++i)
+				cout << diceRoll[i] << " ";
+			cout << endl;
+			
 			moves = currentPlayer -> move(diceRoll);
-		} while (!areValidMoves(moves));
+		} while (!areValidMoves(moves, diceRoll));
 
 		swapPlayer();
 		diceRoll = roll();
@@ -79,6 +80,41 @@ void Game::moveGenerator(vector<int> roll, Board board) {
 
 }
 
-bool Game::areValidMoves(vector<MovePair> moves) {
+bool Game::areValidMoves(vector<MovePair> moves, const vector<int>& diceRoll) {	
+	// Ensure moves match dice rolls
+	vector<int> diceRollCopy = diceRoll;
+	for (int i = 0; i < moves.size(); ++i) {
+		MovePair move = moves[i];
+		int distanceMoved = move.to - move.from;
 
+		vector<int>::iterator findIter = find(
+			diceRollCopy.begin(), 
+			diceRollCopy.end(), 
+			distanceMoved);
+
+		// Player tried to use a value they didn't roll
+		if (findIter == diceRollCopy.end()) {
+			return false;
+		}
+
+		// Moves copies of the item searched for to the end of the vector
+		std::remove(
+			diceRollCopy.begin(), 
+			diceRollCopy.end(), 
+			distanceMoved);
+
+		// Removes last element of the vector
+		diceRollCopy.erase(
+			diceRollCopy.end() - 1,
+			diceRollCopy.end());
+	}
+	
+	// User didn't use all rolls
+	// Check if more rolls could have been used
+	if (moves.size() < diceRoll.size()) {
+
+	}
+	// Check validity of moves
+
+	return true;
 }
