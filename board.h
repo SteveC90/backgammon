@@ -14,8 +14,10 @@ private:
 
 public:
 	Board();
+	Board(const Board& oldBoard) 
 
 	void draw();
 	int getCheckerCountAt(int x);
 	int getPlayerAt(int x);
+	void moveChecker(int from, int to)
 };

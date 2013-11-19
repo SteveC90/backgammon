@@ -31,6 +31,13 @@ Board::Board() {
 	stacks[23][1] = RED;
 }
 
+Board::Board(const Board& oldBoard) {
+	for (int i=0; i<25; ++i) {
+		stacks[i][0] = oldBoard.getCheckerCountAt(i);
+		stacks[i][1] = oldBoard.getPlayerAt(i);
+	}
+}
+
 void Board::draw() {
 	for(int i=12; i>0; --i) {
 		cout.width(3);
@@ -93,4 +100,23 @@ int Board::getCheckerCountAt(int x) {
 
 int Board::getPlayerAt(int x) {
 	return stacks[x][1];
+}
+
+//Doesn't do any validation that the move is legal
+void Board::moveChecker(int from, int to) {
+	Color color = getPlayerAt(from);
+	stacks[from][0]--;
+	if (getCheckerCountAt(from) == 0) {
+		stacks[from][1] = 0; //no player occupies this space;
+	}
+
+	//if an enemy checker occupies that space
+	if (getCheckerCountAt(to) == 1 && getPlayerAt(to) != color) {
+		stacks[to][0] = 0;
+		stacks[24][0]++;
+		stacks[24][1] = getCheckerCountAt(to);
+	}
+
+	stacks[to][0]++;
+	stacks[to][1] = color;
 }
