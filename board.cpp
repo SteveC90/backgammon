@@ -106,17 +106,17 @@ void Board::draw() {
 	cout << endl;
 }
 
-int Board::getCheckerCountAt(int x) {
+int Board::getCheckerCountAt(int x) const {
 	return stacks[x][0];
 }
 
-int Board::getPlayerAt(int x) {
+int Board::getPlayerAt(int x) const {
 	return stacks[x][1];
 }
 
 //Doesn't do any validation that the move is legal
 void Board::moveChecker(int from, int to) {
-	Color color = getPlayerAt(from);
+	Color color = static_cast<Color>(getPlayerAt(from));
 	stacks[from][0]--;
 	if (getCheckerCountAt(from) == 0) {
 		stacks[from][1] = 0; //no player occupies this space;

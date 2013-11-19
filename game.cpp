@@ -76,8 +76,6 @@ void Game::moveGenerator(vector<int> roll, Board board) {
 			
 		}
 	}
-
-
 }
 
 bool Game::areValidMoves(vector<MovePair> moves, const vector<int>& diceRoll) {	

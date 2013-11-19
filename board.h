@@ -16,10 +16,10 @@ private:
 
 public:
 	Board();
-	Board(const Board& oldBoard) 
+	Board(const Board& oldBoard);
 
 	void draw();
-	int getCheckerCountAt(int x);
-	int getPlayerAt(int x);
-	void moveChecker(int from, int to)
+	int getCheckerCountAt(int x) const;
+	int getPlayerAt(int x) const;
+	void moveChecker(int from, int to);
 };
