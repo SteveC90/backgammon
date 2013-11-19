@@ -66,6 +66,20 @@ void Game::swapPlayer() {
 		currentPlayer = &p1;
 }
 
+void Game::moveGenerator(vector<int> roll, Board board) {
+	if(roll.size()==0) {
+		board.draw();
+	}
+
+	for (int i=0; i<24; ++i) {
+		if (board.getCheckerCountAt(i) > 0 && board.getPlayerAt(i)==WHITE) {
+			
+		}
+	}
+
+
+}
+
 bool Game::areValidMoves(vector<MovePair> moves, const vector<int>& diceRoll) {	
 	// Ensure moves match dice rolls
 	vector<int> diceRollCopy = diceRoll;
