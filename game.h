@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdlib>
+#include <algorithm>
 #include <vector>
 #include <ctime>
 #include <iostream>
@@ -22,5 +23,5 @@ public:
 	vector<int> roll();
 	vector<int> chooseFirstPlayer();
 	void swapPlayer();
-	bool areValidMoves(vector<MovePair> moves);
+	bool areValidMoves(vector<MovePair> moves, const vector<int>& diceRoll);
 };

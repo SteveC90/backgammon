@@ -11,5 +11,4 @@ int main() {
 	Game bkgm(p1, p2); 
 
 	bkgm.start();
-
 }

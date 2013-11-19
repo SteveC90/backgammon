@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdlib>
 #include <vector>
+#include <string>
 #include <iostream>
 #include "movepair.h"
 #include "color.h"
