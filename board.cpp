@@ -86,3 +86,11 @@ void Board::draw() {
 	}
 	cout << endl;
 }
+
+int Board::getCheckerCountAt(int x) {
+	return stacks[x][0];
+}
+
+int Board::getPlayerAt(int x) {
+	return stacks[x][1];
+}

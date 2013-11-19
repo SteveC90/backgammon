@@ -16,4 +16,6 @@ public:
 	Board();
 
 	void draw();
+	int getCheckerCountAt(int x);
+	int getPlayerAt(int x);
 };
