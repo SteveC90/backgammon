@@ -174,7 +174,7 @@ bool Game::isMoveValid(const MovePair& move, const Board &board_state) {
 	if (fromPlayerColor == RED && fromIndex < toIndex) {
 		return false;
 	}
-	else if (fromPlayerColor == WHITE && fromIndex > toIndex) {
+	else if (fromPlayerColor == WHITE && fromIndex > toIndex && fromIndex != 24) {
 		return false;
 	}
 
