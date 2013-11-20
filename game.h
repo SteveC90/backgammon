@@ -26,5 +26,5 @@ public:
 	void swapPlayer();
 	bool isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll);
 	bool isMoveValid(const MovePair& move, const Board& board_state);
-	int moveGenerator(vector<int> roll, Board board, const Color& color, bool forward, int max);
+	int moveGenerator(vector<int> roll, Board board, vector<MovePair> currentMoves, const Color& color, int max, vector<MoveConfiguration> &all_plays);
 };

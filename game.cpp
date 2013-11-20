@@ -71,16 +71,17 @@ void Game::swapPlayer() {
 		currentPlayer = &p1;
 }
 
-int Game::moveGenerator(vector<int> roll, Board board, const Color& color, bool forward, int max) {
+int Game::moveGenerator(vector<int> roll, Board board, vector<MovePair> currentMoves, const Color& color, int max, vector<MoveConfiguration> &all_plays) {
 	if(roll.size()==0) {
-		board.draw();
+		MoveConfiguration play(board, currentMoves);
+		all_plays.push_back(play);
 		return max;
 	}
 
 	int newMax = max;
 
 	//iterate through the board from the farthest point from home
-	for (int i=0; i<24 && forward; ++i) {
+	for (int i=0; i<24; ++i) {
 		//check at every stack if there is a white checker
 		if (board.getCheckerCountAt(i) > 0 && board.getPlayerAt(i)==color) {
 			for (int k=0; k<roll.size(); ++k) {
@@ -90,18 +91,36 @@ int Game::moveGenerator(vector<int> roll, Board board, const Color& color, bool 
 					Board newBoard(board);
 					vector<int> temp = roll;
 					temp.erase(temp.begin()+k);
-					newBoard.moveChecker(MovePair(i+1, i+1+roll[k]));
-					
-					newMax = std::max(newMax, moveGenerator(temp, newBoard, color, true, max + 1));
+					MovePair p(i+1, i+1+roll[k]);
+					newBoard.moveChecker(p);
+					currentMoves.push_back(p);
+					newMax = std::max(newMax, moveGenerator(temp, newBoard, currentMoves, color, max + 1, all_plays));
+					currentMoves.pop_back();
 				}
 			}
 		}
 	}
 
+	if(currentMoves.size() == newMax ) {
+		MoveConfiguration play(board, currentMoves);
+		all_plays.push_back(play);
+	}
 	return newMax;
 }
 
 bool Game::isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll) {
+	//generate all legal plays
+	vector<MoveConfiguration> plays;
+	vector<MovePair> v;
+	moveGenerator(diceRoll, board, v, currentPlayer->getColor(), 0, plays);
+
+	for (int i=0; i<plays.size(); ++i) {
+		plays[i].board.draw();
+	}
+
+	cout<< "NUMBER OF LEGAL PLAYS " << plays.size() << endl;
+
+
 	// Verify player moves are within valid stacks
 	for (int i = 0; i < moves.size(); ++i) {
 		if (moves[i].to > 25
