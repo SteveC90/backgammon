@@ -71,19 +71,39 @@ void Game::swapPlayer() {
 		currentPlayer = &p1;
 }
 
-void Game::moveGenerator(vector<int> roll, Board board) {
+int Game::moveGenerator(vector<int> roll, Board board, const Color& color, bool forward, int max) {
 	if(roll.size()==0) {
 		board.draw();
+		return max;
 	}
 
-	for (int i=0; i<24; ++i) {
-		if (board.getCheckerCountAt(i) > 0 && board.getPlayerAt(i)==WHITE) {
-			
+	int maxooomoom = max;
+
+	//iterate through the board from the farthest point from home
+	for (int i=0; i<24 && forward; ++i) {
+		//check at every stack if there is a white checker
+		if (board.getCheckerCountAt(i) > 0 && board.getPlayerAt(i)==color) {
+			for (int k=0; k<roll.size(); ++k) {
+				//if that move is valid, do a recursive call with 
+				// roll removed and new board
+				if( isMoveValid(MovePair(i+1, i+1+roll[k]), board) ) {
+					Board newBoard(board);
+					vector<int> temp = roll;
+					temp.erase(temp.begin()+k);
+					newBoard.moveChecker(i+1, i+1+roll[k]);
+					
+					maxooomoom = std::max(maxooomoom, moveGenerator(temp, newBoard, color, true, max + 1));
+				}
+			}
 		}
 	}
+
+	return maxooomoom;
 }
 
-bool Game::isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll) {	
+bool Game::isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll) {
+	cout << "A:LSKJD:LKJASDF: " << moveGenerator(diceRoll, board, currentPlayer->getColor(), true, 0) << endl;
+
 	// Ensure moves match dice rolls
 	vector<int> diceRollCopy = diceRoll;
 	for (int i = 0; i < moves.size(); ++i) {
@@ -122,16 +142,16 @@ bool Game::isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll) {
 	return true;
 }
 
-bool Game::isMoveValid(MovePair move) {
+bool Game::isMoveValid(MovePair move, const Board &board_state) {
 	// Subtract 1 from to/from to make 0-based
 	--move.from;
 	--move.to;	
 
-	int fromCheckerCount = board.getCheckerCountAt(move.from);
-	int toCheckerCount = board.getCheckerCountAt(move.to);
+	int fromCheckerCount = board_state.getCheckerCountAt(move.from);
+	int toCheckerCount = board_state.getCheckerCountAt(move.to);
 
-	Color fromPlayerColor = static_cast<Color>(board.getPlayerAt(move.from));
-	Color toPlayerColor = static_cast<Color>(board.getPlayerAt(move.to));
+	Color fromPlayerColor = static_cast<Color>(board_state.getPlayerAt(move.from));
+	Color toPlayerColor = static_cast<Color>(board_state.getPlayerAt(move.to));
 
 	// Opposing Players
 	if (fromPlayerColor != toPlayerColor) {
