@@ -87,26 +87,55 @@ int Game::moveGenerator(vector<int> roll, Board board, vector<MovePair> currentM
 
 	int newMax = max;
 
-	//iterate through the board from the farthest point from home
-	for (int i=0; i<24; ++i) {
-		//check at every stack if there is a white checker
-		if (board.getCheckerCountAt(i) > 0 && board.getPlayerAt(i)==color) {
-			for (int k=0; k<roll.size(); ++k) {
-				//if that move is valid, do a recursive call with 
-				// roll removed and new board
-				if( isMoveValid(MovePair(i+1, i+1+roll[k]), board) ) {
-					Board newBoard(board);
-					vector<int> temp = roll;
-					temp.erase(temp.begin()+k);
-					MovePair p(i+1, i+1+roll[k]);
-					newBoard.moveChecker(p);
-					currentMoves.push_back(p);
-					newMax = std::max(newMax, moveGenerator(temp, newBoard, currentMoves, color, max + 1, all_plays));
-					currentMoves.pop_back();
+	if(board.getPlayerAt(24)==color && board.getCheckerCountAt(24)>0) {
+		for (int k=0; k<roll.size(); ++k) {
+			int i = 0;
+			if (color==RED) {
+				i = -25;
+			}
+			i = abs(i+roll[k]);
+			MovePair p(25,i);
+			if( isMoveValid(p, board) ) {
+				Board newBoard(board);
+				vector<int> temp = roll;
+				temp.erase(temp.begin()+k);
+				newBoard.moveChecker(p);
+				currentMoves.push_back(p);
+				newMax = std::max(newMax, moveGenerator(temp, newBoard, currentMoves, color, max + 1, all_plays));
+				currentMoves.pop_back();
+			}
+			//if roll is a double
+			if(roll.size()>1 && roll[i]==roll[i+1]) break;
+		}
+	} else {
+
+		//iterate through the board from the farthest point from home
+		for (int i=0; i<24; ++i) {
+			//check at every stack if there is a white checker
+			if (board.getCheckerCountAt(i) > 0 && board.getPlayerAt(i)==color) {
+				for (int k=0; k<roll.size(); ++k) {
+					//if that move is valid, do a recursive call with 
+					// roll removed and new board
+					int j = i+1;
+					if (color == RED) {
+						j = -j;
+					}
+					MovePair p(abs(j), abs(j+roll[k]));
+					if( isMoveValid(p, board) ) {
+						Board newBoard(board);
+						vector<int> temp = roll;
+						temp.erase(temp.begin()+k);
+						newBoard.moveChecker(p);
+						currentMoves.push_back(p);
+						newMax = std::max(newMax, moveGenerator(temp, newBoard, currentMoves, color, max + 1, all_plays));
+						currentMoves.pop_back();
+					}
+					//if roll is a double
+					if(roll.size()>1 && roll[k]==roll[k+1]) break;
 				}
 			}
 		}
-	}
+	}	
 
 	if(currentMoves.size() == newMax ) {
 		MoveConfiguration play(board, currentMoves);
@@ -121,11 +150,11 @@ bool Game::isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll) {
 	vector<MovePair> v;
 	moveGenerator(diceRoll, board, v, currentPlayer->getColor(), 0, plays);
 
-	// for (int i=0; i<plays.size(); ++i) {
-	// 	plays[i].board.draw();
-	// }
+	/*for (int i=0; i<plays.size(); ++i) {
+		plays[i].board.draw();
+	}*/
 
-	cout<< "NUMBER OF LEGAL PLAYS " << plays.size() << endl;
+	//cout<< "NUMBER OF LEGAL PLAYS " << plays.size() << endl;
 
 
 	// Verify player moves are within valid stacks
