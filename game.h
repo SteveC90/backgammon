@@ -4,6 +4,7 @@
 #include <vector>
 #include <ctime>
 #include <iostream>
+#include <cmath>
 #include "movepair.h"
 #include "moveconfiguration.h"
 #include "player.h"
