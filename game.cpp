@@ -151,7 +151,7 @@ bool Game::isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll) {
 }
 
 bool Game::isMoveValid(const MovePair& move, const Board &board_state) {
-	// Subtract 1 from to/from to make 0-based
+	// Subtract 1 from to/from to get 0-based indices
 	int fromIndex = move.from - 1;
 	int toIndex = move.to - 1;
 
@@ -161,18 +161,37 @@ bool Game::isMoveValid(const MovePair& move, const Board &board_state) {
 	Color fromPlayerColor = static_cast<Color>(board_state.getPlayerAt(fromIndex));
 	Color toPlayerColor = static_cast<Color>(board_state.getPlayerAt(toIndex));
 
-	// Opposing Players
-	if (fromPlayerColor != toPlayerColor) {
-		if (toCheckerCount > 1) {
-			return false;
-		}
-
-		return true;
-	} else {
-		if (toCheckerCount >= 5) {
-			return false;
-		}
-
-		return true;
+	// Moves must be within the bounds of the boards
+	if (fromIndex < 0
+			|| toIndex < 0
+			|| fromIndex > 24
+			|| toIndex > 23
+			|| fromIndex == toIndex) {
+		return false;
 	}
+
+	// Must move piece in the correct direction
+	if (fromPlayerColor == RED && fromIndex < toIndex) {
+		return false;
+	}
+	else if (fromPlayerColor == WHITE && fromIndex > toIndex) {
+		return false;
+	}
+
+	// Can't move to a stack with 5 pieces
+	if (toCheckerCount >= 5) {
+		return false;
+	}
+
+	// Can't move a piece from an empty stack
+	if (fromCheckerCount == 0) {
+		return false;
+	}
+
+	// Can't move to a stack with 2 or more pieces of the other color
+	if (fromPlayerColor != toPlayerColor && toCheckerCount >= 2) {
+		return false;
+	}
+
+	return true;
 }
