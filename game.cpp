@@ -148,7 +148,7 @@ bool Game::isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll) {
 	//generate all legal plays
 	vector<MoveConfiguration> plays;
 	vector<MovePair> v;
-	moveGenerator(diceRoll, board, v, currentPlayer->getColor(), 0, plays);
+	int maxDiceCanUse = moveGenerator(diceRoll, board, v, currentPlayer->getColor(), 0, plays);
 
 	/*for (int i=0; i<plays.size(); ++i) {
 		plays[i].board.draw();
@@ -156,53 +156,17 @@ bool Game::isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll) {
 
 	//cout<< "NUMBER OF LEGAL PLAYS " << plays.size() << endl;
 
+	if (moves.size() < maxDiceCanUse) {
+		return false;
+	}
 
-	// Verify player moves are within valid stacks
-	for (int i = 0; i < moves.size(); ++i) {
-		if (moves[i].to > 25
-				|| moves[i].from > 25
-				|| moves[i].to <= 0
-				|| moves[i].from <= 0) {
-			return false;
+	for (int i = 0; i < plays.size(); ++i) {
+		if (std::equal(moves.begin(), moves.end(), plays[i].moves.begin())) {
+			return true;
 		}
 	}
 
-	// Ensure moves match dice rolls
-	vector<int> diceRollCopy = diceRoll;
-	for (int i = 0; i < moves.size(); ++i) {
-		MovePair move = moves[i];
-		int distanceMoved = move.to - move.from;
-
-		vector<int>::iterator findIter = find(
-			diceRollCopy.begin(), 
-			diceRollCopy.end(), 
-			distanceMoved);
-
-		// Player tried to use a value they didn't roll
-		if (findIter == diceRollCopy.end()) {
-			return false;
-		}
-
-		// Moves copies of the item searched for to the end of the vector
-		std::remove(
-			diceRollCopy.begin(), 
-			diceRollCopy.end(), 
-			distanceMoved);
-
-		// Removes last element of the vector
-		diceRollCopy.erase(
-			diceRollCopy.end() - 1,
-			diceRollCopy.end());
-	}
-	
-	// User didn't use all rolls
-	// Check if more rolls could have been used
-	if (moves.size() < diceRoll.size()) {
-
-	}
-	// Check validity of moves
-
-	return true;
+	return false;
 }
 
 bool Game::isMoveValid(const MovePair& move, const Board &board_state) {
