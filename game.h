@@ -5,6 +5,7 @@
 #include <ctime>
 #include <iostream>
 #include "movepair.h"
+#include "moveconfiguration.h"
 #include "player.h"
 #include "board.h"
 #include "color.h"

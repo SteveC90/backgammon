@@ -3,6 +3,6 @@
 struct MovePair {
 	int to;
 	int from;
-	MovePair(){}
+	MovePair() {}
 	MovePair(int from, int to) {this->to = to; this->from = from;}
 };

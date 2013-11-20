@@ -77,7 +77,7 @@ int Game::moveGenerator(vector<int> roll, Board board, const Color& color, bool 
 		return max;
 	}
 
-	int maxooomoom = max;
+	int newMax = max;
 
 	//iterate through the board from the farthest point from home
 	for (int i=0; i<24 && forward; ++i) {
@@ -92,17 +92,25 @@ int Game::moveGenerator(vector<int> roll, Board board, const Color& color, bool 
 					temp.erase(temp.begin()+k);
 					newBoard.moveChecker(i+1, i+1+roll[k]);
 					
-					maxooomoom = std::max(maxooomoom, moveGenerator(temp, newBoard, color, true, max + 1));
+					newMax = std::max(newMax, moveGenerator(temp, newBoard, color, true, max + 1));
 				}
 			}
 		}
 	}
 
-	return maxooomoom;
+	return newMax;
 }
 
 bool Game::isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll) {
-	cout << "A:LSKJD:LKJASDF: " << moveGenerator(diceRoll, board, currentPlayer->getColor(), true, 0) << endl;
+	// Verify player moves are within valid stacks
+	for (int i = 0; i < moves.size(); ++i) {
+		if (moves[i].to > 25
+				|| moves[i].from > 25
+				|| moves[i].to <= 0
+				|| moves[i].from <= 0) {
+			return false;
+		}
+	}
 
 	// Ensure moves match dice rolls
 	vector<int> diceRollCopy = diceRoll;
