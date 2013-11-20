@@ -3,6 +3,7 @@
 #include <stack>
 #include <iostream>
 #include "color.h"
+#include "movepair.h"
 
 using namespace std;
 
@@ -21,5 +22,5 @@ public:
 	void draw() const;
 	int getCheckerCountAt(int x) const;
 	int getPlayerAt(int x) const;
-	void moveChecker(int from, int to);
+	void moveChecker(const MovePair& move);
 };

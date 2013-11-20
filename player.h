@@ -16,4 +16,5 @@ public:
 	Player(Color c);
 	vector<MovePair> move(vector<int> roll);
 	Color getColor() { return color; }
+	string toString();
 };

@@ -54,9 +54,9 @@ void Board::draw() const {
 			cout.width(columnWidth);
 			if (stacks[col][0] >= row) {
 				if (stacks[col][1] == RED)
-					cout << "X";
+					cout << "R";
 				else
-					cout << "O";
+					cout << "W";
 			} else {
 				cout << " ";
 			}
@@ -71,9 +71,9 @@ void Board::draw() const {
 			cout.width(columnWidth);
 			if (stacks[col][0] >= row) {
 				if (stacks[col][1] == RED)
-					cout << "X";
+					cout << "R";
 				else
-					cout << "O";
+					cout << "W";
 			} else {
 				cout << " ";
 			}
@@ -115,24 +115,24 @@ int Board::getPlayerAt(int x) const {
 }
 
 //Doesn't do any validation that the move is legal
-void Board::moveChecker(int from, int to) {
+void Board::moveChecker(const MovePair& move) {
 	// Make to/from 0-based to work as indices
-	--from;
-	--to;
+	int fromIndex = move.from - 1;
+	int toIndex = move.to - 1;
 
-	Color color = static_cast<Color>(getPlayerAt(from));
-	stacks[from][0]--;
-	if (getCheckerCountAt(from) == 0) {
-		stacks[from][1] = 0; //no player occupies this space;
+	Color color = static_cast<Color>(getPlayerAt(fromIndex));
+	stacks[fromIndex][0]--;
+	if (getCheckerCountAt(fromIndex) == 0) {
+		stacks[fromIndex][1] = NONE; //no player occupies this space;
 	}
 
 	//if an enemy checker occupies that space
-	if (getCheckerCountAt(to) == 1 && getPlayerAt(to) != color) {
-		stacks[to][0] = 0;
+	if (getCheckerCountAt(toIndex) == 1 && getPlayerAt(toIndex) != color) {
+		stacks[toIndex][0] = 0;
 		stacks[24][0]++;
-		stacks[24][1] = getCheckerCountAt(to);
+		stacks[24][1] = color;
 	}
 
-	stacks[to][0]++;
-	stacks[to][1] = color;
+	stacks[toIndex][0]++;
+	stacks[toIndex][1] = color;
 }

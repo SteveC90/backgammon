@@ -11,7 +11,7 @@ void Game::start() {
 	vector<int> diceRoll = chooseFirstPlayer();
 
 	while(true) {
-		cout << "Player " << currentPlayer->getColor() << "'s turn" << endl;
+		cout << currentPlayer->toString() << "'s turn" << endl;
 
 		vector<MovePair> moves;
 		do {
@@ -25,7 +25,7 @@ void Game::start() {
 
 		// Move checkers
 		for (int i = 0; i < moves.size(); ++i) {
-			board.moveChecker(moves[i].from, moves[i].to);
+			board.moveChecker(moves[i]);
 		}
 
 		swapPlayer();
@@ -90,7 +90,7 @@ int Game::moveGenerator(vector<int> roll, Board board, const Color& color, bool 
 					Board newBoard(board);
 					vector<int> temp = roll;
 					temp.erase(temp.begin()+k);
-					newBoard.moveChecker(i+1, i+1+roll[k]);
+					newBoard.moveChecker(MovePair(i+1, i+1+roll[k]));
 					
 					newMax = std::max(newMax, moveGenerator(temp, newBoard, color, true, max + 1));
 				}
@@ -150,16 +150,16 @@ bool Game::isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll) {
 	return true;
 }
 
-bool Game::isMoveValid(MovePair move, const Board &board_state) {
+bool Game::isMoveValid(const MovePair& move, const Board &board_state) {
 	// Subtract 1 from to/from to make 0-based
-	--move.from;
-	--move.to;	
+	int fromIndex = move.from - 1;
+	int toIndex = move.to - 1;
 
-	int fromCheckerCount = board_state.getCheckerCountAt(move.from);
-	int toCheckerCount = board_state.getCheckerCountAt(move.to);
+	int fromCheckerCount = board_state.getCheckerCountAt(fromIndex);
+	int toCheckerCount = board_state.getCheckerCountAt(toIndex);
 
-	Color fromPlayerColor = static_cast<Color>(board_state.getPlayerAt(move.from));
-	Color toPlayerColor = static_cast<Color>(board_state.getPlayerAt(move.to));
+	Color fromPlayerColor = static_cast<Color>(board_state.getPlayerAt(fromIndex));
+	Color toPlayerColor = static_cast<Color>(board_state.getPlayerAt(toIndex));
 
 	// Opposing Players
 	if (fromPlayerColor != toPlayerColor) {

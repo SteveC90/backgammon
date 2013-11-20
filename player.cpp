@@ -26,3 +26,14 @@ vector<MovePair> Player::move(vector<int> roll) {
 
 	return moves;
 }
+
+string Player::toString() {
+	if (color == RED) {
+		return "Player Red";
+	}
+	else if (color == WHITE) {
+		return "Player White";
+	}
+
+	return "";
+}

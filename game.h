@@ -25,6 +25,6 @@ public:
 	vector<int> chooseFirstPlayer();
 	void swapPlayer();
 	bool isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll);
-	bool isMoveValid(MovePair move, const Board& board_state);
+	bool isMoveValid(const MovePair& move, const Board& board_state);
 	int moveGenerator(vector<int> roll, Board board, const Color& color, bool forward, int max);
 };
