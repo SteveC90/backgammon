@@ -10,5 +10,5 @@ int main() {
 	Player p2(RED);
 	Game bkgm(p1, p2); 
 
-	bkgm.start();
+	bkgm.run();
 }
