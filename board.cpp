@@ -1,41 +1,70 @@
 #include "board.h"
 
 Board::Board() {
+	piecesRemaining[RED - 1] = 0;
+	piecesRemaining[WHITE - 1] = 0;
+
 	for(int i=0; i<25; ++i) {
-		stacks[i][0] = 0;
-		stacks[i][1] = 0;
+		fillStack(i, 0, NONE);
 	}
 
-	stacks[0][0] = 2;
-	stacks[0][1] = WHITE;
-
-	stacks[5][0] = 5;
-	stacks[5][1] = RED;
-
-	stacks[7][0] = 3;
-	stacks[7][1] = RED;
-
-	stacks[11][0] = 5;
-	stacks[11][1] = WHITE;
-
-	stacks[12][0] = 5;
-	stacks[12][1] = RED;
-
-	stacks[16][0] = 3;
-	stacks[16][1] = WHITE;
-
-	stacks[18][0] = 5;
-	stacks[18][1] = WHITE;
-
-	stacks[23][0] = 2;
-	stacks[23][1] = RED;
+	fillStack(0, 2, WHITE);
+	fillStack(5, 5, RED);
+	fillStack(7, 3, RED);
+	fillStack(11, 5, WHITE);
+	fillStack(12, 5, RED);
+	fillStack(16, 3, WHITE);
+	fillStack(18, 5, WHITE);
+	fillStack(23, 2, RED);
 }
 
 Board::Board(const Board& oldBoard) {
+	piecesRemaining[RED - 1] = 0;
+	piecesRemaining[WHITE - 1] = 0;
+
 	for (int i=0; i<25; ++i) {
-		stacks[i][0] = oldBoard.getCheckerCountAt(i);
-		stacks[i][1] = oldBoard.getPlayerAt(i);
+		fillStack(i, oldBoard.getCheckerCountAt(i), oldBoard.getPlayerAt(i));
 	}
+}
+
+bool Board::playerCanBearOff(const Player* const player) const {
+	int piecesCount = 0;
+	int startingIndex = 0;
+	Color color = player->getColor();
+
+	// Make sure we're checking the right home area
+	if (color == WHITE) {
+		startingIndex = 18;
+	}
+	else if (color == NONE) {
+		return false;
+	}
+
+	// Count pieces in home area
+	for (int i = startingIndex; i < startingIndex + 6; ++i) {
+		if (stacks[i][1] == color) {
+			piecesCount += stacks[i][0];
+		}
+	}
+
+	cout << "Home count: " << piecesCount << endl;
+
+	// If all pieces are in home area we can bear off
+	if (piecesCount == piecesRemaining[color - 1]) {
+		return true;
+	}
+
+	return false;
+}
+
+void Board::fillStack(const int stackIndex, const int piecesCount, const Color color) {
+	if (piecesCount > 5 || piecesCount < 0) {
+		throw 1;
+	}
+
+	stacks[stackIndex][0] = piecesCount;
+	stacks[stackIndex][1] = color;
+	piecesRemaining[color - 1] += piecesCount;
 }
 
 void Board::draw() const {
@@ -95,9 +124,9 @@ void Board::draw() const {
 	cout << "Bar: ";
 	for (int i=0; i<stacks[24][0]; ++i) {
 		if (stacks[24][1] == RED)
-			cout << "X";
+			cout << "R";
 		else
-			cout << "O";
+			cout << "W";
 	}
 	cout << endl;
 
@@ -110,8 +139,8 @@ int Board::getCheckerCountAt(int x) const {
 	return stacks[x][0];
 }
 
-int Board::getPlayerAt(int x) const {
-	return stacks[x][1];
+Color Board::getPlayerAt(int x) const {
+	return static_cast<Color>(stacks[x][1]);
 }
 
 //Doesn't do any validation that the move is legal

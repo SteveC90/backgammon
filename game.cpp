@@ -28,6 +28,13 @@ void Game::run() {
 			board.moveChecker(moves[i]);
 		}
 
+		if (board.playerCanBearOff(currentPlayer)) {
+			cout << "YES!!!!!!!!!!" << endl;
+		}
+		else {
+			cout << "NOOOOOOOOOOOO!" << endl;
+		}
+
 		swapPlayer();
 		diceRoll = roll();
 		board.draw();
@@ -114,9 +121,9 @@ bool Game::isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll) {
 	vector<MovePair> v;
 	moveGenerator(diceRoll, board, v, currentPlayer->getColor(), 0, plays);
 
-	for (int i=0; i<plays.size(); ++i) {
-		plays[i].board.draw();
-	}
+	// for (int i=0; i<plays.size(); ++i) {
+	// 	plays[i].board.draw();
+	// }
 
 	cout<< "NUMBER OF LEGAL PLAYS " << plays.size() << endl;
 
