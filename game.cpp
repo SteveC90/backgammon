@@ -6,7 +6,7 @@ Game::Game(Player &p1, Player &p2) {
 	srand( time(NULL) );
 }
 
-void Game::start() {
+void Game::run() {
 	board.draw();
 	vector<int> diceRoll = chooseFirstPlayer();
 

@@ -4,7 +4,7 @@
 
 struct MoveConfiguration {
 	Board board;
-	MovePair move;
+	vector<MovePair> moves;
 
-	MoveConfiguration(Board board, MovePair move) : board(board), move(move) {}
+	MoveConfiguration(Board board, vector<MovePair> moves) : board(board), moves(moves) {}
 };
