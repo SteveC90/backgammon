@@ -105,7 +105,7 @@ int Game::moveGenerator(vector<int> roll, Board board, vector<MovePair> currentM
 				currentMoves.pop_back();
 			}
 			//if roll is a double
-			if(roll.size()>1 && roll[i]==roll[i+1]) break;
+			if(roll.size()>1 && roll[k]==roll[k+1]) break;
 		}
 	} else {
 
@@ -131,7 +131,7 @@ int Game::moveGenerator(vector<int> roll, Board board, vector<MovePair> currentM
 						currentMoves.pop_back();
 					}
 					//if roll is a double
-					if(roll.size()>1 && roll[k]==roll[k+1]) break;
+					if(roll.size()>1 && roll[0]==roll[1]) break;
 				}
 			}
 		}

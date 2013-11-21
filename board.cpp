@@ -159,7 +159,7 @@ void Board::moveChecker(const MovePair& move) {
 	if (getCheckerCountAt(toIndex) == 1 && getPlayerAt(toIndex) != color) {
 		stacks[toIndex][0] = 0;
 		stacks[24][0]++;
-		stacks[24][1] = color;
+		stacks[24][1] = getPlayerAt(toIndex);
 	}
 
 	stacks[toIndex][0]++;
