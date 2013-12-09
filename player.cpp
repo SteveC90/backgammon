@@ -9,7 +9,7 @@ Player::Player(Color c) {
 }
 
 vector<MovePair> Player::move(vector<int> roll) {
-	cout << "Enter moves as '<from #> <to #>'. Enter '0 0' to end turn: " << endl;
+	cout << "Enter moves as '<from #> <to #>'. Enter 25 as <from #> for the Bar. Enter '0 0' to end turn: " << endl;
 	vector<MovePair> moves;
 
 	for (int i=0; i<roll.size(); ++i) {

@@ -6,6 +6,6 @@ struct MoveConfiguration {
 	Board board;
 	vector<MovePair> moves;
 
-	MoveConfiguration(Board board, vector<MovePair> moves) : board(board), moves(moves) {}
-	MoveConfiguration() {}
+	MoveConfiguration(Board board, vector<MovePair> moves) : board(board), moves(moves) { }
+	MoveConfiguration() { }
 };
