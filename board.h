@@ -12,9 +12,12 @@ class Board {
 private:
 	static const int columnWidth = 3;
 
-	//first index is stack number
-	//second index is 0 - count and 1 - player color
-	int stacks[25][2];
+	// First index is stack number
+	// Second index is 0 - count and 1 - player color
+	int stacks[24][2];
+	
+	// Index is 0 - RED, 1 - WHITE
+	int bar[2];
 
 	int piecesRemaining[2];
 
@@ -27,6 +30,7 @@ public:
 	void draw() const;
 	int getCheckerCountAt(int x) const;
 	Color getPlayerAt(int x) const;
-	void moveChecker(const MovePair& move);
+	void moveChecker(const MovePair& move, Color color = NONE);
 	bool playerCanBearOff(const Player* const player) const;
+	int getCheckerCountOnBar(const Color color) const;
 };

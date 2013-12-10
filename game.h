@@ -15,13 +15,14 @@ using namespace std;
 
 class Game {
 private:
+	bool debug;
 	Player p1, p2;
 	Player *currentPlayer;
 	Board board;
 
 public:
 	Game(Player &p1, Player &p2);
-	void run();
+	void run(bool debug = false);
 	vector<int> roll();
 	vector<int> chooseFirstPlayer();
 	void swapPlayer();
