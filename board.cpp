@@ -11,14 +11,14 @@ Board::Board() {
 		fillStack(i, 0, NONE);
 	}
 
-/*	fillStack(0, 2, WHITE);
+	fillStack(0, 2, WHITE);
 	fillStack(5, 5, RED);
 	fillStack(7, 3, RED);
 	fillStack(11, 5, WHITE);
 	fillStack(12, 5, RED);
 	fillStack(16, 3, WHITE);
 	fillStack(18, 5, WHITE);
-	fillStack(23, 2, RED);*/
+	fillStack(23, 2, RED);
 
 /*	fillStack(22, 4, WHITE);
 	fillStack(21, 3, WHITE);
@@ -27,8 +27,8 @@ Board::Board() {
 	fillStack(3, 3, RED);
 	fillStack(2, 2, RED);*/
 
-	fillStack(0, 1, WHITE);
-	fillStack(1, 2, RED);
+	/*fillStack(0, 1, WHITE);
+	fillStack(1, 2, RED);*/
 }
 
 Board::Board(const Board& oldBoard) {
@@ -284,4 +284,8 @@ void Board::bearOff(int index) {
 	if (getCheckerCountAt(index) == 0) {
 		stacks[index][1] = NONE; //no player occupies this space;
 	}
+}
+
+int Board::getRemainingPieces(const Color c) const {
+	return piecesRemaining[c-1];
 }

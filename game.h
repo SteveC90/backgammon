@@ -28,4 +28,5 @@ public:
 	bool isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll);
 	bool isMoveValid(const MovePair& move, const Board& board_state);
 	int moveGenerator(vector<int> roll, Board board, vector<MovePair> currentMoves, const Player* const player, int max, vector<MoveConfiguration> &all_plays);
+	void Game::evaluatePlays(vector<MoveConfiguration> &Plays) const;
 };

@@ -16,7 +16,7 @@ void Game::run(bool debug) {
 	// Game loop
 	// TODO: change while(true) condition so we can end the game
 	bool playIsValid;
-	while(true) {
+	while(board.getRemainingPieces(RED) > 0 && board.getRemainingPieces(WHITE) > 0) {
 		cout << currentPlayer->toString() << "'s turn" << endl;
 
 		// Get valid moves from player
@@ -47,6 +47,11 @@ void Game::run(bool debug) {
 		board.draw();
 		cout << "\n\n";
 	}
+
+	if (board.getRemainingPieces(p1.getColor()) == 0)
+		cout << p1.toString() << " wins!!!\n";
+	else 
+		cout << p2.toString() << " wins!!!\n";
 }
 
 vector<int> Game::roll() {
@@ -272,6 +277,12 @@ bool Game::isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll) {
 	}
 
 	return false;
+}
+
+void Game::evaluatePlays(vector<MoveConfiguration> &Plays) const {
+	//Blot Danger
+
+	//Blockading Factor
 }
 
 bool Game::isMoveValid(const MovePair& move, const Board &board_state) {

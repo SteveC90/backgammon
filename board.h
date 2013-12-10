@@ -34,4 +34,5 @@ public:
 	bool playerCanBearOff(const Player* const player) const;
 	int getCheckerCountOnBar(const Color color) const;
 	void bearOff(int index);
+	int getRemainingPieces(const Color c) const;
 };
