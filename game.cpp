@@ -1,12 +1,15 @@
 #include "game.h"
 
 Game::Game(Player &p1, Player &p2) {
+	this->debug = false;
 	this->p1 = p1;
 	this->p2 = p2;
 	srand( time(NULL) );
 }
 
-void Game::run() {
+void Game::run(bool debug) {
+	this->debug = debug;
+
 	board.draw();
 	vector<int> diceRoll = chooseFirstPlayer();
 
@@ -35,7 +38,10 @@ void Game::run() {
 			cout << "NOOOOOOOOOOOO!" << endl;
 		}
 
+		cout << "current Player: "<< currentPlayer->toString() << endl;
 		swapPlayer();
+
+		cout << "Next Player: "<< currentPlayer->toString() << endl;
 		diceRoll = roll();
 		board.draw();
 		cout << "\n\n";
@@ -45,8 +51,19 @@ void Game::run() {
 vector<int> Game::roll() {
 	vector<int> rollVector;
 
-	rollVector.push_back(rand()%6 + 1);
-	rollVector.push_back(rand()%6 + 1);
+	if (debug) {
+		cout << "Enter rolls: ";
+
+		int die1, die2;
+		cin >> die1 >> die2;
+
+		rollVector.push_back(die1);
+		rollVector.push_back(die2);
+	} else {
+
+		rollVector.push_back(rand()%6 + 1);
+		rollVector.push_back(rand()%6 + 1);
+	}
 
 	if(rollVector[0] == rollVector[1]) {
 		rollVector.push_back(rollVector[0]);
@@ -78,7 +95,8 @@ void Game::swapPlayer() {
 		currentPlayer = &p1;
 }
 
-int Game::moveGenerator(vector<int> roll, Board board, vector<MovePair> currentMoves, const Color& color, int max, vector<MoveConfiguration> &all_plays) {
+int Game::moveGenerator(vector<int> roll, Board board, vector<MovePair> currentMoves, const Player* const player, int max, vector<MoveConfiguration> &all_plays) {
+	const Color color = player->getColor();
 	if(roll.size()==0) {
 		MoveConfiguration play(board, currentMoves);
 		all_plays.push_back(play);
@@ -87,6 +105,7 @@ int Game::moveGenerator(vector<int> roll, Board board, vector<MovePair> currentM
 
 	int newMax = max;
 
+	//if the player has a piece in the bar
 	if(board.getPlayerAt(24)==color && board.getCheckerCountAt(24)>0) {
 		for (int k=0; k<roll.size(); ++k) {
 			int i = 0;
@@ -101,13 +120,94 @@ int Game::moveGenerator(vector<int> roll, Board board, vector<MovePair> currentM
 				temp.erase(temp.begin()+k);
 				newBoard.moveChecker(p);
 				currentMoves.push_back(p);
-				newMax = std::max(newMax, moveGenerator(temp, newBoard, currentMoves, color, max + 1, all_plays));
+				newMax = std::max(newMax, moveGenerator(temp, newBoard, currentMoves, player, max + 1, all_plays));
 				currentMoves.pop_back();
 			}
 			//if roll is a double
 			if(roll.size()>1 && roll[k]==roll[k+1]) break;
 		}
-	} else {
+	}
+	// if the player is in a bearing off state
+	else if (board.playerCanBearOff(player)) {
+		//cout << "Bearing off state?"<<endl;
+		int startingIndex = -5;
+		int endIndex = 1;
+		if (color == WHITE) {
+			startingIndex = 18;
+			endIndex = 24;
+		}
+		//loop through everything in the player's home board
+		for (int i=startingIndex; i < endIndex; i++) {
+			//cout << "Looping through home board" << endl;
+			if (board.getPlayerAt(abs(i)) == color && board.getCheckerCountAt(abs(i)) > 0) {
+				for (int k=0; k<roll.size(); ++k) {
+					int j;
+					if (color == WHITE)
+						j = i+1;
+					else 
+						j = i-1;
+
+					int distanceFromEdge = endIndex - i;
+						//cout << "distanceFromEdge: "<<distanceFromEdge <<", roll[k]: "<<roll[k]<<endl;
+					//not bearing off, but attempt to move closer to edge
+					if (distanceFromEdge > roll[k]) {
+						MovePair p(abs(j), abs(j+roll[k]));
+						//cout << "Move Pair: " << abs(j) << " " << abs(j+roll[k]) <<endl;
+						if( isMoveValid(p, board) ) {
+							Board newBoard(board);
+							vector<int> temp = roll;
+							temp.erase(temp.begin()+k);
+							newBoard.moveChecker(p);
+							currentMoves.push_back(p);
+							newMax = std::max(newMax, moveGenerator(temp, newBoard, currentMoves, player, max + 1, all_plays));
+							currentMoves.pop_back();
+						}
+					}
+
+					//bearing off from a stack index that is less than the roll
+					if (distanceFromEdge < roll[k]) {
+						//must check all previous stacks to see if they are clear
+						bool canBearOff = true;
+						for (int m = i-1; m > startingIndex; m--) {
+							if (board.getPlayerAt(abs(m)) == color && board.getCheckerCountAt(abs(m)) > 0) {
+								canBearOff = false;
+								break;
+							}
+						}
+						//bear off and do the recursive call
+						if (canBearOff) {
+							MovePair p(abs(j));
+							//cout << "Bearing off from index > roll" <<endl;
+							Board newBoard(board);
+							vector<int> temp = roll;
+							temp.erase(temp.begin()+k);
+							newBoard.bearOff(abs(i));
+							currentMoves.push_back(p);
+							newMax = std::max(newMax, moveGenerator(temp, newBoard, currentMoves, player, max + 1, all_plays));
+							currentMoves.pop_back();
+						}
+					}
+
+					//bearing off from index == roll 
+					if (distanceFromEdge == roll[k]) {
+						MovePair p(abs(j));
+						//cout << "Bearing off from roll index" <<endl;
+						Board newBoard(board);
+						vector<int> temp = roll;
+						temp.erase(temp.begin()+k);
+						newBoard.bearOff(abs(i));
+						currentMoves.push_back(p);
+						newMax = std::max(newMax, moveGenerator(temp, newBoard, currentMoves, player, max + 1, all_plays));
+						currentMoves.pop_back();	
+					}
+					if(roll.size()>1 && roll[0]==roll[1]) break;
+
+				}
+			}
+		}
+	}
+	//all other move types
+	else {
 
 		//iterate through the board from the farthest point from home
 		for (int i=0; i<24; ++i) {
@@ -127,7 +227,7 @@ int Game::moveGenerator(vector<int> roll, Board board, vector<MovePair> currentM
 						temp.erase(temp.begin()+k);
 						newBoard.moveChecker(p);
 						currentMoves.push_back(p);
-						newMax = std::max(newMax, moveGenerator(temp, newBoard, currentMoves, color, max + 1, all_plays));
+						newMax = std::max(newMax, moveGenerator(temp, newBoard, currentMoves, player, max + 1, all_plays));
 						currentMoves.pop_back();
 					}
 					//if roll is a double
@@ -148,7 +248,7 @@ bool Game::isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll) {
 	//generate all legal plays
 	vector<MoveConfiguration> plays;
 	vector<MovePair> v;
-	int maxDiceCanUse = moveGenerator(diceRoll, board, v, currentPlayer->getColor(), 0, plays);
+	int maxDiceCanUse = moveGenerator(diceRoll, board, v, currentPlayer, 0, plays);
 
 	/*for (int i=0; i<plays.size(); ++i) {
 		plays[i].board.draw();
@@ -162,6 +262,7 @@ bool Game::isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll) {
 
 	for (int i = 0; i < plays.size(); ++i) {
 		if (std::equal(moves.begin(), moves.end(), plays[i].moves.begin())) {
+			cout << "This is a valid move!!!!!!"<<endl;
 			return true;
 		}
 	}

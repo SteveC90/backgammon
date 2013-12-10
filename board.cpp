@@ -8,21 +8,31 @@ Board::Board() {
 		fillStack(i, 0, NONE);
 	}
 
-	fillStack(0, 2, WHITE);
+/*	fillStack(0, 2, WHITE);
 	fillStack(5, 5, RED);
 	fillStack(7, 3, RED);
 	fillStack(11, 5, WHITE);
 	fillStack(12, 5, RED);
 	fillStack(16, 3, WHITE);
 	fillStack(18, 5, WHITE);
-	fillStack(23, 2, RED);
+	fillStack(23, 2, RED);*/
+
+	fillStack(22, 4, WHITE);
+	fillStack(21, 3, WHITE);
+	fillStack(20, 2, WHITE);
+
+	fillStack(3, 3, RED);
+	fillStack(2, 2, RED);
+
+//	fillStack(0, 1, WHITE);
+//	fillStack(1, 2, RED);
 }
 
 Board::Board(const Board& oldBoard) {
 	piecesRemaining[RED - 1] = 0;
 	piecesRemaining[WHITE - 1] = 0;
 
-	for (int i=0; i<25; ++i) {
+	for (int i=0; i<24; ++i) {
 		fillStack(i, oldBoard.getCheckerCountAt(i), oldBoard.getPlayerAt(i));
 	}
 }
@@ -145,6 +155,10 @@ Color Board::getPlayerAt(int x) const {
 
 //Doesn't do any validation that the move is legal
 void Board::moveChecker(const MovePair& move) {
+	if(move.bearingOff) {
+		bearOff(move.from-1);
+		return;
+	}
 	// Make to/from 0-based to work as indices
 	int fromIndex = move.from - 1;
 	int toIndex = move.to - 1;
@@ -164,4 +178,13 @@ void Board::moveChecker(const MovePair& move) {
 
 	stacks[toIndex][0]++;
 	stacks[toIndex][1] = color;
+}
+
+void Board::bearOff(int index) {
+	Color color = static_cast<Color>(getPlayerAt(index));
+	piecesRemaining[color-1]--;
+	stacks[index][0]--;
+	if (getCheckerCountAt(index) == 0) {
+		stacks[index][1] = NONE; //no player occupies this space;
+	}
 }

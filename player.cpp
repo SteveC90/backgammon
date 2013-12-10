@@ -16,6 +16,11 @@ vector<MovePair> Player::move(vector<int> roll) {
 		MovePair move;
 
 		cin >> move.from >> move.to;
+		if (move.to == -1) 
+			move.bearingOff = true;
+		else 
+			move.bearingOff = false;
+		
 		if (move.from == 0 && move.to == 0)
 			break;
 		moves.push_back(move);

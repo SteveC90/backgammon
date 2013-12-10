@@ -29,4 +29,5 @@ public:
 	Color getPlayerAt(int x) const;
 	void moveChecker(const MovePair& move);
 	bool playerCanBearOff(const Player* const player) const;
+	void bearOff(int index);
 };
