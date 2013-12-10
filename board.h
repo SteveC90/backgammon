@@ -33,4 +33,5 @@ public:
 	void moveChecker(const MovePair& move, Color color = NONE);
 	bool playerCanBearOff(const Player* const player) const;
 	int getCheckerCountOnBar(const Color color) const;
+	void bearOff(int index);
 };
