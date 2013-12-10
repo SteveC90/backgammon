@@ -338,8 +338,8 @@ void Game::evaluteBlockadingFactor(vector<MoveConfiguration> &Plays) const {
 	Color opponent = RED;
 	if (color == RED)
 		opponent = WHITE;
-	for (int i = 0; i < Plays.size(); ++i) {
-		Plays[i].board.draw();
+	for (int i = 0; i < Plays.size(); ++i) {/*
+		Plays[i].board.draw();*/
 		double evalSum = 0;
 		Board tempBoard = Plays[i].board;
 		int opponentPieces = 0;
@@ -380,10 +380,10 @@ void Game::evaluteBlockadingFactor(vector<MoveConfiguration> &Plays) const {
 					opponentPieces += tempBoard.getCheckerCountAt(abs(j));
 				}
 
-				if (contiguousBlock > 0) {
+				/*if (contiguousBlock > 0) {
 					//cout << "Opponents: " << opponentPieces << endl;
 					cout << "Contiguous block of: " << contiguousBlock << ", at: " << abs(j) + 1 << ", Payoff: " << eval/37 << endl;
-				}
+				}*/
 				contiguousBlock = 0;
 				evalSum += eval/37;
 
