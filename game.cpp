@@ -1,6 +1,6 @@
 #include "game.h"
 
-Game::Game(Player &p1, Player &p2) {
+Game::Game(Player *p1, Player *p2) {
 	debug = false;
 	this->p1 = p1;
 	this->p2 = p2;
@@ -51,10 +51,10 @@ void Game::run(bool debug) {
 		cout << endl;
 	}
 
-	if (board.getRemainingPieces(p1.getColor()) == 0)
-		cout << p1.toString() << " wins!!!\n";
+	if (board.getRemainingPieces(p1->getColor()) == 0)
+		cout << p1->toString() << " wins!!!\n";
 	else 
-		cout << p2.toString() << " wins!!!\n";
+		cout << p2->toString() << " wins!!!\n";
 }
 
 vector<int> Game::roll() {
@@ -86,9 +86,9 @@ vector<int> Game::chooseFirstPlayer() {
 		result = roll();
 
 		if(result[0] < result[1]) {
-			currentPlayer = &p1;
+			currentPlayer = p1;
 		} else {
-			currentPlayer = &p2;
+			currentPlayer = p2;
 		}
 	} while (result[0] == result[1]);
 
@@ -96,10 +96,10 @@ vector<int> Game::chooseFirstPlayer() {
 }
 
 void Game::swapPlayer() {
-	if ( currentPlayer->getColor() == p1.getColor() )
-		currentPlayer = &p2;
+	if ( currentPlayer->getColor() == p1->getColor() )
+		currentPlayer = p2;
 	else 
-		currentPlayer = &p1;
+		currentPlayer = p1;
 }
 
 
@@ -299,7 +299,6 @@ bool Game::isPlayValid(vector<MovePair> moves, const int maxDiceCanUse, const ve
 
 	for (int i = 0; i < plays.size(); ++i) {
 		if (std::equal(moves.begin(), moves.end(), plays[i].moves.begin())) {
-			cout << "This is a valid move!!!!!!"<<endl;
 			return true;
 		}
 	}

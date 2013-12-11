@@ -11,16 +11,16 @@ Board::Board() {
 		fillStack(i, 0, NONE);
 	}
 
-/*	fillStack(0, 2, WHITE);
+	fillStack(0, 2, WHITE);
 	fillStack(5, 5, RED);
 	fillStack(7, 3, RED);
 	fillStack(11, 5, WHITE);
 	fillStack(12, 5, RED);
 	fillStack(16, 3, WHITE);
 	fillStack(18, 5, WHITE);
-	fillStack(23, 2, RED);*/
+	fillStack(23, 2, RED);
 
-	fillStack(11, 1, WHITE);
+/*	fillStack(11, 1, WHITE);
 	fillStack(12, 1, WHITE);
 	fillStack(13, 2, WHITE);
 	fillStack(14, 2, WHITE);
@@ -29,7 +29,7 @@ Board::Board() {
 	fillStack(17, 2, WHITE);
 
 	fillStack(22, 3, RED);
-	fillStack(23, 2, RED);
+	fillStack(23, 2, RED);*/
 
 	/*fillStack(0, 1, WHITE);
 	fillStack(1, 2, RED);*/

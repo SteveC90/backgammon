@@ -10,31 +10,46 @@ const float Ai::pipProbabilities[24] = {
 };
 
 vector<MovePair> Ai::move(vector<int> roll, vector<MoveConfiguration>& plays) {
-	evaluatePlays(plays);
+	return plays[evaluatePlays(plays)].moves;
 }
 
-void Ai::evaluatePlays(vector<MoveConfiguration> &Plays) const {
+int Ai::evaluatePlays(vector<MoveConfiguration> &Plays) const {
+	int maxIndex;
+	float maxEvalSeen = -1000;
 	for (int i = 0; i < Plays.size(); ++i) {
-		float value = 0;		
-		value += evaluateBlotDangerForColor(Plays[i]);
+		float value = 0;	
+		value += evaluateBlotDanger(Plays[i]);
 		value += evaluteBlockadingFactor(Plays[i]);
+		value += evaluateBarFactor(Plays[i]);
 
 		Plays[i].moveEval = value;
+		if (value > maxEvalSeen) {
+			maxEvalSeen = value;
+			maxIndex = i;
+		}
 	}
+
+	cout << "Blot Danger: " << evaluateBlotDanger(Plays[maxIndex]) << endl;
+	cout << "Blockading Factor: " << evaluteBlockadingFactor(Plays[maxIndex]) << endl;
+	cout << "Bar Factor: " << evaluateBarFactor(Plays[maxIndex]) <<endl;
+
+	return maxIndex;
 }
 
-float Ai::evaluateBlotDangerForColor(const MoveConfiguration& configuration) const {
+float Ai::evaluateBlotDanger(const MoveConfiguration& configuration) const {
 	float value = 0;
 	const float maxValue = 3.1656;
 	const Board &board = configuration.board;
 	const int directionToEnemy = (color == WHITE) ? 1 : -1;
 	const Color enemyColor = (color == WHITE) ? RED : WHITE;
 
+	int blotCount = 0;
 	// Iterate through board
 	for (int stackIndex = 0; stackIndex < 24; ++stackIndex) {
 		// Found a blot
 		if (board.getPlayerAt(stackIndex) == color
 				&& board.getCheckerCountAt(stackIndex) == 1) {
+			++blotCount;
 			// Iterate through enemy positions
 			for (int enemyStackIndex = stackIndex + directionToEnemy;
 					enemyStackIndex < 24 && enemyStackIndex >= 0;
@@ -49,7 +64,7 @@ float Ai::evaluateBlotDangerForColor(const MoveConfiguration& configuration) con
 		}
 	}
 
-	return (value / maxValue);
+	return (blotCount == 0) ? 0 : -(value / (maxValue * blotCount));
 }
 
 float Ai::evaluteBlockadingFactor(const MoveConfiguration& configuration) const {
@@ -109,4 +124,39 @@ float Ai::evaluteBlockadingFactor(const MoveConfiguration& configuration) const 
 	}
 
 	return evalSum;
+}
+
+float Ai::evaluateBarFactor(const MoveConfiguration& configuration) const {
+	Color opponentColor = RED;
+	int homeStart = 18;
+	int homeEnd = 24;
+
+	if (color == RED) {
+		homeStart = -5;
+		homeEnd = 1;
+		opponentColor = WHITE;
+	}
+
+	Board tempBoard = configuration.board;
+
+	int numOnBar = tempBoard.getCheckerCountOnBar(opponentColor);
+
+	if (numOnBar == 0) {
+		return 0;
+	}
+
+	int sum = numOnBar;
+
+	for (int j = homeStart; j < homeEnd; ++j) {
+		if (tempBoard.getPlayerAt(abs(j)) == color) {
+
+			if (tempBoard.getCheckerCountAt(abs(j)) > 1) {
+				sum++;
+			} else if (tempBoard.getCheckerCountAt(abs(j)) == 1) {
+				sum--;
+			}
+		}
+	}
+	return (float)sum / 6;
+
 }

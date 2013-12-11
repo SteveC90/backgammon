@@ -6,11 +6,11 @@ using namespace std;
 class Ai : public Player {
 private:
 	static const float pipProbabilities[24];
-	Color color;
 
-	void evaluatePlays(vector<MoveConfiguration> &Plays) const;
-	float evaluateBlotDangerForColor(const MoveConfiguration& configuration) const;
+	int evaluatePlays(vector<MoveConfiguration> &Plays) const;
+	float evaluateBlotDanger(const MoveConfiguration& configuration) const;
 	float evaluteBlockadingFactor(const MoveConfiguration& configuration) const;
+	float evaluateBarFactor(const MoveConfiguration& configuration) const;
 public:
 	Ai() : Player() { }
 	Ai(Color c) : Player(c) { };

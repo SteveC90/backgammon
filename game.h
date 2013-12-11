@@ -10,19 +10,20 @@
 #include "player.h"
 #include "board.h"
 #include "color.h"
+#include "ai.h"
 
 using namespace std;
 
 class Game {
 private:
 	bool debug;
-	Player p1, p2;
+	Player *p1, *p2;
 	Player *currentPlayer;
 	Board board;
 	
 	void cleanPlays(const int maxDiceCanUse, const vector<int>& diceRoll, vector<MoveConfiguration>& plays);
 public:
-	Game(Player &p1, Player &p2);
+	Game(Player *p1, Player *p2);
 	void run(bool debug = false);
 	vector<int> roll();
 	vector<int> chooseFirstPlayer();

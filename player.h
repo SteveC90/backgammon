@@ -10,7 +10,7 @@
 using namespace std;
 
 class Player {
-private:
+protected:
 	Color color;
 	
 public:
