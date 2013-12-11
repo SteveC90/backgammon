@@ -19,20 +19,15 @@ private:
 	Player p1, p2;
 	Player *currentPlayer;
 	Board board;
-
-	float evaluateBlotDangerForColor(const Color& color, const MoveConfiguration& configuration) const;
-	float evaluteBlockadingFactor(const MoveConfiguration& configuration) const;
-
-public:
-	static const float pipProbabilities[24];
 	
+	void cleanPlays(const int maxDiceCanUse, const vector<int>& diceRoll, vector<MoveConfiguration>& plays);
+public:
 	Game(Player &p1, Player &p2);
 	void run(bool debug = false);
 	vector<int> roll();
 	vector<int> chooseFirstPlayer();
 	void swapPlayer();
-	bool isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll);
+	bool isPlayValid(vector<MovePair> moves, const int maxDiceCanUse, const vector<MoveConfiguration>& plays);
 	bool isMoveValid(const MovePair& move, const Board& board_state);
 	int moveGenerator(vector<int> roll, Board board, vector<MovePair> currentMoves, const Player* const player, int max, vector<MoveConfiguration> &all_plays);
-	void evaluatePlays(vector<MoveConfiguration> &Plays) const;
 };

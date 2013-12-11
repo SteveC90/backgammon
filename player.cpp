@@ -8,7 +8,7 @@ Player::Player(Color c) {
 	this->color = c;
 }
 
-vector<MovePair> Player::move(vector<int> roll) {
+vector<MovePair> Player::move(vector<int> roll, vector<MoveConfiguration>& plays) {
 	cout << "Enter moves as '<from #> <to #>'. Enter 25 as <from #> for the Bar. Enter '0 0' to end turn: " << endl;
 	vector<MovePair> moves;
 

@@ -1,14 +1,5 @@
 #include "game.h"
 
-const float Game::pipProbabilities[24] = {
-	0.3055, 0.3333, 0.3888, 0.4166,
-	0.4166, 0.4722, 0.1666, 0.1666,
-	0.1388, 0.0833, 0.0555, 0.0833,
-	0,      0,      0.0277, 0.0277,
-	0,      0.0277, 0,      0.0277,
-	0,      0,      0,      0.0277
-};
-
 Game::Game(Player &p1, Player &p2) {
 	debug = false;
 	this->p1 = p1;
@@ -36,9 +27,15 @@ void Game::run(bool debug) {
 				cout << diceRoll[i] << " ";
 			cout << endl;
 			
-			moves = currentPlayer -> move(diceRoll);
+			vector<MovePair> v;
+			vector<MoveConfiguration> plays;
+			int maxDiceCanUse = moveGenerator(diceRoll, board, v, currentPlayer, 0, plays);
 
-			playIsValid = isPlayValid(moves, diceRoll);
+			cleanPlays(maxDiceCanUse, diceRoll, plays);
+
+			moves = currentPlayer -> move(diceRoll, plays);
+
+			playIsValid = isPlayValid(moves, maxDiceCanUse, plays);
 			if (!playIsValid)
 				cout << "Invalid moves. Re-enter move choices." << endl;
 		} while (!playIsValid);
@@ -51,7 +48,7 @@ void Game::run(bool debug) {
 		swapPlayer();
 		diceRoll = roll();
 		board.draw();
-		cout << "\n\n";
+		cout << endl;
 	}
 
 	if (board.getRemainingPieces(p1.getColor()) == 0)
@@ -143,7 +140,7 @@ int Game::moveGenerator(vector<int> roll, Board board, vector<MovePair> currentM
 		}
 	}
 	// if the player is in a bearing off state
-	else if (board.playerCanBearOff(player)) {
+	else if (board.playerCanBearOff(color)) {
 		//cout << "Bearing off state?"<<endl;
 		int startingIndex = -5;
 		int endIndex = 1;
@@ -259,12 +256,7 @@ int Game::moveGenerator(vector<int> roll, Board board, vector<MovePair> currentM
 	return newMax;
 }
 
-bool Game::isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll) {
-	//generate all legal plays
-	vector<MoveConfiguration> plays;
-	vector<MovePair> v;
-	int maxDiceCanUse = moveGenerator(diceRoll, board, v, currentPlayer, 0, plays);
-
+void Game::cleanPlays(const int maxDiceCanUse, const vector<int>& diceRoll, vector<MoveConfiguration>& plays) {
 	// If maxDiceCanUse is 1, then remove configurations
 	// that don't use the larger of the two rolls
 	if (diceRoll.size() == 2 && maxDiceCanUse == 1) {
@@ -293,14 +285,14 @@ bool Game::isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll) {
 		}
 	}
 
-	evaluatePlays(plays);
-
 	// for (int i=0; i<plays.size(); ++i) {
-	// 	plays[i].board.draw();
+	// 	   plays[i].board.draw();
 	// }
 
 	// cout<< "NUMBER OF LEGAL PLAYS " << plays.size() << endl;
+}
 
+bool Game::isPlayValid(vector<MovePair> moves, const int maxDiceCanUse, const vector<MoveConfiguration>& plays) {
 	if (moves.size() < maxDiceCanUse) {
 		return false;
 	}
@@ -313,16 +305,6 @@ bool Game::isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll) {
 	}
 
 	return false;
-}
-
-void Game::evaluatePlays(vector<MoveConfiguration> &Plays) const {
-	for (int i = 0; i < Plays.size(); ++i) {
-		float value = 0;		
-		value += evaluateBlotDangerForColor(currentPlayer->getColor(), Plays[i]);
-		value += evaluteBlockadingFactor(Plays[i]);
-
-		Plays[i].moveEval = value;
-	}
 }
 
 bool Game::isMoveValid(const MovePair& move, const Board &board_state) {
@@ -371,93 +353,4 @@ bool Game::isMoveValid(const MovePair& move, const Board &board_state) {
 	}
 
 	return true;
-}
-
-float Game::evaluateBlotDangerForColor(const Color& color, const MoveConfiguration& configuration) const {
-	float value = 0;
-	const float maxValue = 3.1656;
-	const Board &board = configuration.board;
-	const int directionToEnemy = (color == WHITE) ? 1 : -1;
-	const Color enemyColor = (color == WHITE) ? RED : WHITE;
-
-	// Iterate through board
-	for (int stackIndex = 0; stackIndex < 24; ++stackIndex) {
-		// Found a blot
-		if (board.getPlayerAt(stackIndex) == color
-				&& board.getCheckerCountAt(stackIndex) == 1) {
-			// Iterate through enemy positions
-			for (int enemyStackIndex = stackIndex + directionToEnemy;
-					enemyStackIndex < 24 && enemyStackIndex >= 0;
-					enemyStackIndex += directionToEnemy) {
-				// Found blot danger
-				// Add probability of being hit to value
-				if (board.getPlayerAt(enemyStackIndex) == enemyColor
-						&& board.getCheckerCountAt(enemyStackIndex) > 0) {
-					value += Game::pipProbabilities[abs(enemyStackIndex - stackIndex - 1)];
-				}
-			}
-		}
-	}
-
-	return (value / maxValue);
-}
-
-float Game::evaluteBlockadingFactor(const MoveConfiguration& configuration) const {
-	//iterate trough all legal boards
-	Color color = currentPlayer->getColor();
-	Color opponent = RED;
-	if (color == RED)
-		opponent = WHITE;
-
-	double evalSum = 0;
-	Board tempBoard = configuration.board;
-	int opponentPieces = 0;
-
-	int end = 24;
-	int j = 0;
-	//a count for the contiguous block
-	int contiguousBlock = 0;
-	//keeps track of the last checker encountered in a block
-	int lastBlockingChecker = 0;
-	if (color == RED) {
-		lastBlockingChecker = -23;
-		end = 1;
-		j = -23;
-	}
-	for ( ; j < end; ++j) {
-		if (tempBoard.getPlayerAt(abs(j)) == color && tempBoard.getCheckerCountAt(abs(j)) > 1) {
-			++contiguousBlock;
-			//lastBlockingChecker = abs(j);
-		} else {
-			double eval = 0;
-
-			//a contiguous block of 7 or more is not any more effective than 6
-			if (contiguousBlock > 6) {
-				eval += 36;
-			} else {
-				eval += contiguousBlock * contiguousBlock;
-			}
-
-			/*if ( contiguousBlock > 0 && abs(lastBlockingChecker - abs(j) + contiguousBlock) > 0) {
-				eval /= abs(lastBlockingChecker - abs(j) + contiguousBlock) + 1;
-				contiguousBlock = 0;
-				lastBlockingChecker = j-1;
-			}*/
-
-			eval *= ((double) (tempBoard.getRemainingPieces(opponent) - opponentPieces)) /  tempBoard.getRemainingPieces(opponent);
-			if (tempBoard.getPlayerAt(abs(j)) == opponent) {
-				opponentPieces += tempBoard.getCheckerCountAt(abs(j));
-			}
-
-			/*if (contiguousBlock > 0) {
-				//cout << "Opponents: " << opponentPieces << endl;
-				cout << "Contiguous block of: " << contiguousBlock << ", at: " << abs(j) + 1 << ", Payoff: " << eval/37 << endl;
-			}*/
-			contiguousBlock = 0;
-			evalSum += eval/37;
-
-		}
-	}
-
-	return evalSum;
 }

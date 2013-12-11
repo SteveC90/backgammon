@@ -47,10 +47,9 @@ Board::Board(const Board& oldBoard) {
 	}
 }
 
-bool Board::playerCanBearOff(const Player* const player) const {
+bool Board::playerCanBearOff(const Color color) const {
 	int piecesCount = 0;
 	int startingIndex = 0;
-	Color color = player->getColor();
 
 	// Make sure we're checking the right home area
 	if (color == WHITE) {
@@ -67,7 +66,7 @@ bool Board::playerCanBearOff(const Player* const player) const {
 		}
 	}
 
-	cout << "Home count: " << piecesCount << endl;
+	//cout << "Home count: " << piecesCount << endl;
 
 	// If all pieces are in home area we can bear off
 	if (piecesCount == piecesRemaining[color - 1]) {

@@ -2,9 +2,10 @@
 #include <cstdlib>
 #include <stack>
 #include <iostream>
-#include "player.h"
 #include "color.h"
 #include "movepair.h"
+
+class Player;
 
 using namespace std;
 
@@ -31,7 +32,7 @@ public:
 	int getCheckerCountAt(int x) const;
 	Color getPlayerAt(int x) const;
 	void moveChecker(const MovePair& move, Color color = NONE);
-	bool playerCanBearOff(const Player* const player) const;
+	bool playerCanBearOff(const Color color) const;
 	int getCheckerCountOnBar(const Color color) const;
 	void bearOff(int index);
 	int getRemainingPieces(const Color c) const;
