@@ -1,5 +1,14 @@
 #include "game.h"
 
+const float Game::pipProbabilities[24] = {
+	0.3055, 0.3333, 0.3888, 0.4166,
+	0.4166, 0.4722, 0.1666, 0.1666,
+	0.1388, 0.0833, 0.0555, 0.0833,
+	0,      0,      0.0277, 0.0277,
+	0,      0.0277, 0,      0.0277,
+	0,      0,      0,      0.0277
+};
+
 Game::Game(Player &p1, Player &p2) {
 	debug = false;
 	this->p1 = p1;
@@ -45,6 +54,12 @@ void Game::run(bool debug) {
 		cout << "Next Player: "<< currentPlayer->toString() << endl;
 		diceRoll = roll();
 		board.draw();
+		cout << "\n\n";
+
+		MoveConfiguration tmpConfig;
+		tmpConfig.board = board;
+		cout << "^^^Blot Danger For " << p1.toString() << " " << evaluateBlotDangerForColor(p1.getColor(), tmpConfig) << endl;
+		cout << "^^^Blot Danger For " << p2.toString() << " " << evaluateBlotDangerForColor(p2.getColor(), tmpConfig) << endl;
 		cout << "\n\n";
 	}
 
@@ -259,6 +274,34 @@ bool Game::isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll) {
 	vector<MovePair> v;
 	int maxDiceCanUse = moveGenerator(diceRoll, board, v, currentPlayer, 0, plays);
 
+	// If maxDiceCanUse is 1, then remove configurations
+	// that don't use the larger of the two rolls
+	if (diceRoll.size() == 2 && maxDiceCanUse == 1) {
+		vector<MoveConfiguration> maxDiePlays;
+		for (int i = 0; i < plays.size(); ++i) {
+			int maxDieRoll = max(diceRoll[0], diceRoll[1]);
+			int dieUsedInPlay = abs(plays[i].moves[0].to - plays[i].moves[0].from);
+
+			if (maxDieRoll == dieUsedInPlay) {
+				maxDiePlays.push_back(plays[i]);
+			}
+		}
+
+		// If there were any plays that use the larger roll,
+		// replace the var 'plays' with that subset of plays
+		if (maxDiePlays.size() > 0) {
+			plays = maxDiePlays;
+		}
+	}
+
+	// Remove plays that don't use the max possible dice
+	for (int i = 0; i < plays.size(); ++i) {
+		if (plays[i].moves.size() < maxDiceCanUse) {
+			plays.erase(plays.begin() + i);
+			--i;
+		}
+	}
+
 	// for (int i=0; i<plays.size(); ++i) {
 	// 	plays[i].board.draw();
 	// }
@@ -280,7 +323,6 @@ bool Game::isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll) {
 }
 
 void Game::evaluatePlays(vector<MoveConfiguration> &Plays) const {
-	//Blot Danger
 
 	//Blockading Factor
 }
@@ -331,4 +373,33 @@ bool Game::isMoveValid(const MovePair& move, const Board &board_state) {
 	}
 
 	return true;
+}
+
+float Game::evaluateBlotDangerForColor(const Color& color, const MoveConfiguration& configuration) const {
+	float value = 0;
+	const float maxValue = 3.1656;
+	const Board &board = configuration.board;
+	const int directionToEnemy = (color == WHITE) ? 1 : -1;
+	const Color enemyColor = (color == WHITE) ? RED : WHITE;
+
+	// Iterate through board
+	for (int stackIndex = 0; stackIndex < 24; ++stackIndex) {
+		// Found a blot
+		if (board.getPlayerAt(stackIndex) == color
+				&& board.getCheckerCountAt(stackIndex) == 1) {
+			// Iterate through enemy positions
+			for (int enemyStackIndex = stackIndex + directionToEnemy;
+					enemyStackIndex < 24 && enemyStackIndex >= 0;
+					enemyStackIndex += directionToEnemy) {
+				// Found blot danger
+				// Add probability of being hit to value
+				if (board.getPlayerAt(enemyStackIndex) == enemyColor
+						&& board.getCheckerCountAt(enemyStackIndex) > 0) {
+					value += Game::pipProbabilities[abs(enemyStackIndex - stackIndex - 1)];
+				}
+			}
+		}
+	}
+
+	return (value / maxValue);
 }

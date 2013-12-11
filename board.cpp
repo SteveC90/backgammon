@@ -7,28 +7,22 @@ Board::Board() {
 	bar[0] = 0;
 	bar[1] = 0;
 
-	for(int i=0; i<24; ++i) {
+	for(int i = 0; i < 24; ++i) {
 		fillStack(i, 0, NONE);
 	}
 
-	fillStack(0, 2, WHITE);
+/*	fillStack(0, 2, WHITE);
 	fillStack(5, 5, RED);
 	fillStack(7, 3, RED);
 	fillStack(11, 5, WHITE);
 	fillStack(12, 5, RED);
 	fillStack(16, 3, WHITE);
 	fillStack(18, 5, WHITE);
-	fillStack(23, 2, RED);
+	fillStack(23, 2, RED);*/
 
-/*	fillStack(22, 4, WHITE);
-	fillStack(21, 3, WHITE);
-	fillStack(20, 2, WHITE);
-
-	fillStack(3, 3, RED);
-	fillStack(2, 2, RED);*/
-
-	/*fillStack(0, 1, WHITE);
-	fillStack(1, 2, RED);*/
+	for(int i = 3; i < 24; ++i)
+		fillStack(i, 2, RED);
+	fillStack(0, 1, WHITE);
 }
 
 Board::Board(const Board& oldBoard) {

@@ -19,7 +19,12 @@ private:
 	Player p1, p2;
 	Player *currentPlayer;
 	Board board;
+
+	float evaluateBlotDangerForColor(const Color& color, const MoveConfiguration& configuration) const;
+
 public:
+	static const float pipProbabilities[24];
+	
 	Game(Player &p1, Player &p2);
 	void run(bool debug = false);
 	vector<int> roll();
@@ -28,5 +33,5 @@ public:
 	bool isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll);
 	bool isMoveValid(const MovePair& move, const Board& board_state);
 	int moveGenerator(vector<int> roll, Board board, vector<MovePair> currentMoves, const Player* const player, int max, vector<MoveConfiguration> &all_plays);
-	void Game::evaluatePlays(vector<MoveConfiguration> &Plays) const;
+	void evaluatePlays(vector<MoveConfiguration> &Plays) const;
 };
