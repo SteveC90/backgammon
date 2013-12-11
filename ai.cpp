@@ -27,6 +27,11 @@ int Ai::evaluatePlays(vector<MoveConfiguration> &Plays) const {
 			maxEvalSeen = value;
 			maxIndex = i;
 		}
+		else if (value == maxEvalSeen) {
+			if (Plays[i].board.getRemainingPieces(color) < Plays[maxIndex].board.getRemainingPieces(color)) {
+				maxIndex = i;
+			}
+		}
 	}
 
 	cout << "Blot Danger: " << evaluateBlotDanger(Plays[maxIndex]) << endl;
@@ -58,7 +63,7 @@ float Ai::evaluateBlotDanger(const MoveConfiguration& configuration) const {
 				// Add probability of being hit to value
 				if (board.getPlayerAt(enemyStackIndex) == enemyColor
 						&& board.getCheckerCountAt(enemyStackIndex) > 0) {
-					value += pipProbabilities[abs(enemyStackIndex - stackIndex - 1)];
+					value += pipProbabilities[abs(enemyStackIndex - stackIndex) - 1];
 				}
 			}
 		}

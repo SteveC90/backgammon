@@ -142,28 +142,29 @@ int Game::moveGenerator(vector<int> roll, Board board, vector<MovePair> currentM
 	// if the player is in a bearing off state
 	else if (board.playerCanBearOff(color)) {
 		//cout << "Bearing off state?"<<endl;
-		int startingIndex = -5;
-		int endIndex = 1;
+		int startingIndex = 5;
+		int direction = -1;
 		if (color == WHITE) {
 			startingIndex = 18;
-			endIndex = 24;
+			direction = 1;
 		}
-		//loop through everything in the player's home board
-		for (int i=startingIndex; i < endIndex; i++) {
-			//cout << "Looping through home board" << endl;
-			if (board.getPlayerAt(abs(i)) == color && board.getCheckerCountAt(abs(i)) > 0) {
-				for (int k=0; k<roll.size(); ++k) {
-					int j;
-					if (color == WHITE)
-						j = i+1;
-					else 
-						j = i-1;
+		int endIndex = (direction == 1) ? 24 : -1;
 
-					int distanceFromEdge = endIndex - i;
-						//cout << "distanceFromEdge: "<<distanceFromEdge <<", roll[k]: "<<roll[k]<<endl;
+		//loop through everything in the player's home board
+		for (int i=startingIndex; i < 24 && i > -1; i += direction) {
+			//cout << "Looping through home board" << endl;
+			if (board.getPlayerAt(i) == color && board.getCheckerCountAt(i) > 0) {
+				for (int k=0; k<roll.size(); ++k) {
+					int j = i + 1;
+					int m = -roll[k];
+					if (color == WHITE)
+						m = roll[k];
+
+					int distanceFromEdge = abs(endIndex - i);
+					//cout << "distanceFromEdge: "<<distanceFromEdge <<", roll[k]: "<<roll[k]<<endl;
 					//not bearing off, but attempt to move closer to edge
 					if (distanceFromEdge > roll[k]) {
-						MovePair p(abs(j), abs(j+roll[k]));
+						MovePair p(j, j+m);
 						//cout << "Move Pair: " << abs(j) << " " << abs(j+roll[k]) <<endl;
 						if( isMoveValid(p, board) ) {
 							Board newBoard(board);
@@ -180,20 +181,20 @@ int Game::moveGenerator(vector<int> roll, Board board, vector<MovePair> currentM
 					if (distanceFromEdge < roll[k]) {
 						//must check all previous stacks to see if they are clear
 						bool canBearOff = true;
-						for (int m = i-1; m > startingIndex; m--) {
-							if (board.getPlayerAt(abs(m)) == color && board.getCheckerCountAt(abs(m)) > 0) {
+						for (int n = i-direction; n*direction >= startingIndex*direction; n-=direction) {
+							if (board.getPlayerAt(n) == color && board.getCheckerCountAt(n) > 0) {
 								canBearOff = false;
 								break;
 							}
 						}
 						//bear off and do the recursive call
 						if (canBearOff) {
-							MovePair p(abs(j));
+							MovePair p(j);
 							//cout << "Bearing off from index > roll" <<endl;
 							Board newBoard(board);
 							vector<int> temp = roll;
 							temp.erase(temp.begin()+k);
-							newBoard.bearOff(abs(i));
+							newBoard.bearOff(i);
 							currentMoves.push_back(p);
 							newMax = std::max(newMax, moveGenerator(temp, newBoard, currentMoves, player, max + 1, all_plays));
 							currentMoves.pop_back();
@@ -202,12 +203,12 @@ int Game::moveGenerator(vector<int> roll, Board board, vector<MovePair> currentM
 
 					//bearing off from index == roll 
 					if (distanceFromEdge == roll[k]) {
-						MovePair p(abs(j));
+						MovePair p(j);
 						//cout << "Bearing off from roll index" <<endl;
 						Board newBoard(board);
 						vector<int> temp = roll;
 						temp.erase(temp.begin()+k);
-						newBoard.bearOff(abs(i));
+						newBoard.bearOff(i);
 						currentMoves.push_back(p);
 						newMax = std::max(newMax, moveGenerator(temp, newBoard, currentMoves, player, max + 1, all_plays));
 						currentMoves.pop_back();	
@@ -229,10 +230,11 @@ int Game::moveGenerator(vector<int> roll, Board board, vector<MovePair> currentM
 					// If that move is valid, do a recursive call with 
 					// roll removed and new board
 					int j = i+1;
+					int m = roll[k];
 					if (color == RED) {
-						j = -j;
+						m = -m;
 					}
-					MovePair p(abs(j), abs(j + roll[k]));
+					MovePair p(j, j + m);
 					if( isMoveValid(p, board) ) {
 						Board newBoard(board);
 						vector<int> temp = roll;
