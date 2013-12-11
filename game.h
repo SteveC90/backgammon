@@ -21,6 +21,7 @@ private:
 	Board board;
 
 	float evaluateBlotDangerForColor(const Color& color, const MoveConfiguration& configuration) const;
+	float evaluteBlockadingFactor(const MoveConfiguration& configuration) const;
 
 public:
 	static const float pipProbabilities[24];

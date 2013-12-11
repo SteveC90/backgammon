@@ -20,9 +20,19 @@ Board::Board() {
 	fillStack(18, 5, WHITE);
 	fillStack(23, 2, RED);*/
 
-	for(int i = 3; i < 24; ++i)
-		fillStack(i, 2, RED);
-	fillStack(0, 1, WHITE);
+	fillStack(11, 1, WHITE);
+	fillStack(12, 1, WHITE);
+	fillStack(13, 2, WHITE);
+	fillStack(14, 2, WHITE);
+	fillStack(15, 2, WHITE);
+	fillStack(16, 2, WHITE);
+	fillStack(17, 2, WHITE);
+
+	fillStack(22, 3, RED);
+	fillStack(23, 2, RED);
+
+	/*fillStack(0, 1, WHITE);
+	fillStack(1, 2, RED);*/
 }
 
 Board::Board(const Board& oldBoard) {

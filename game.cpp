@@ -48,18 +48,9 @@ void Game::run(bool debug) {
 			board.moveChecker(moves[i], currentPlayer->getColor());
 		}
 
-		cout << "current Player: "<< currentPlayer->toString() << endl;
 		swapPlayer();
-
-		cout << "Next Player: "<< currentPlayer->toString() << endl;
 		diceRoll = roll();
 		board.draw();
-		cout << "\n\n";
-
-		MoveConfiguration tmpConfig;
-		tmpConfig.board = board;
-		cout << "^^^Blot Danger For " << p1.toString() << " " << evaluateBlotDangerForColor(p1.getColor(), tmpConfig) << endl;
-		cout << "^^^Blot Danger For " << p2.toString() << " " << evaluateBlotDangerForColor(p2.getColor(), tmpConfig) << endl;
 		cout << "\n\n";
 	}
 
@@ -302,6 +293,8 @@ bool Game::isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll) {
 		}
 	}
 
+	evaluatePlays(plays);
+
 	// for (int i=0; i<plays.size(); ++i) {
 	// 	plays[i].board.draw();
 	// }
@@ -323,8 +316,13 @@ bool Game::isPlayValid(vector<MovePair> moves, const vector<int>& diceRoll) {
 }
 
 void Game::evaluatePlays(vector<MoveConfiguration> &Plays) const {
+	for (int i = 0; i < Plays.size(); ++i) {
+		float value = 0;		
+		value += evaluateBlotDangerForColor(currentPlayer->getColor(), Plays[i]);
+		value += evaluteBlockadingFactor(Plays[i]);
 
-	//Blockading Factor
+		Plays[i].moveEval = value;
+	}
 }
 
 bool Game::isMoveValid(const MovePair& move, const Board &board_state) {
@@ -402,4 +400,64 @@ float Game::evaluateBlotDangerForColor(const Color& color, const MoveConfigurati
 	}
 
 	return (value / maxValue);
+}
+
+float Game::evaluteBlockadingFactor(const MoveConfiguration& configuration) const {
+	//iterate trough all legal boards
+	Color color = currentPlayer->getColor();
+	Color opponent = RED;
+	if (color == RED)
+		opponent = WHITE;
+
+	double evalSum = 0;
+	Board tempBoard = configuration.board;
+	int opponentPieces = 0;
+
+	int end = 24;
+	int j = 0;
+	//a count for the contiguous block
+	int contiguousBlock = 0;
+	//keeps track of the last checker encountered in a block
+	int lastBlockingChecker = 0;
+	if (color == RED) {
+		lastBlockingChecker = -23;
+		end = 1;
+		j = -23;
+	}
+	for ( ; j < end; ++j) {
+		if (tempBoard.getPlayerAt(abs(j)) == color && tempBoard.getCheckerCountAt(abs(j)) > 1) {
+			++contiguousBlock;
+			//lastBlockingChecker = abs(j);
+		} else {
+			double eval = 0;
+
+			//a contiguous block of 7 or more is not any more effective than 6
+			if (contiguousBlock > 6) {
+				eval += 36;
+			} else {
+				eval += contiguousBlock * contiguousBlock;
+			}
+
+			/*if ( contiguousBlock > 0 && abs(lastBlockingChecker - abs(j) + contiguousBlock) > 0) {
+				eval /= abs(lastBlockingChecker - abs(j) + contiguousBlock) + 1;
+				contiguousBlock = 0;
+				lastBlockingChecker = j-1;
+			}*/
+
+			eval *= ((double) (tempBoard.getRemainingPieces(opponent) - opponentPieces)) /  tempBoard.getRemainingPieces(opponent);
+			if (tempBoard.getPlayerAt(abs(j)) == opponent) {
+				opponentPieces += tempBoard.getCheckerCountAt(abs(j));
+			}
+
+			/*if (contiguousBlock > 0) {
+				//cout << "Opponents: " << opponentPieces << endl;
+				cout << "Contiguous block of: " << contiguousBlock << ", at: " << abs(j) + 1 << ", Payoff: " << eval/37 << endl;
+			}*/
+			contiguousBlock = 0;
+			evalSum += eval/37;
+
+		}
+	}
+
+	return evalSum;
 }
