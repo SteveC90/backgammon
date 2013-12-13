@@ -34,9 +34,9 @@ int Ai::evaluatePlays(vector<MoveConfiguration> &Plays) const {
 		}
 	}
 
-	cout << "Blot Danger: " << evaluateBlotDanger(Plays[maxIndex]) << endl;
+	/*cout << "Blot Danger: " << evaluateBlotDanger(Plays[maxIndex]) << endl;
 	cout << "Blockading Factor: " << evaluteBlockadingFactor(Plays[maxIndex]) << endl;
-	cout << "Bar Factor: " << evaluateBarFactor(Plays[maxIndex]) <<endl;
+	cout << "Bar Factor: " << evaluateBarFactor(Plays[maxIndex]) <<endl;*/
 
 	return maxIndex;
 }
